@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         initTextViews();
         db = openOrCreateDatabase("DBCalculatice", MODE_PRIVATE,null);
         db.execSQL("CREATE TABLE IF NOT EXISTS calcularice_history ("
-                + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "calculation TEXT,"
                 + "result TEXT)");
         displayLastHistoryEntry();
