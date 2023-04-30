@@ -6,9 +6,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     TextView resultsTV;
     TextView resultdbTextView;
     TextView calculationTextView;
-    TextView resultTextView ;
+
     ListView  historyListView  ;
     String workings = "";
     String formula = "";
@@ -65,63 +63,38 @@ public class MainActivity extends AppCompatActivity {
     public void equalsOnClick(View view)
     {
         Double result = 0.0;
-        if (workings != "" || workings != null){
+        try {
+            if (workings.endsWith("+") || workings.endsWith("-") || workings.endsWith("*") || workings.endsWith("/")) {
+                Toast.makeText(this, "Invalid Input", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (workings.equals("+") || workings.equals("-") || workings.equals("*")|| workings.equals("*") ) {
+                Toast.makeText(this, "Invalid Input", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+        if (workings != "" && workings != null){
             result = eval(workings);
+            ContentValues values = new ContentValues();
+            values.put("calculation", workings);
+            values.put("result", result);
+            db.insert("calcularice_history", null, values);
+            displayLastHistoryEntry();
+            if(result != null){
+                resultsTV.setText(String.valueOf(result.doubleValue()));
+                workings = "";
+            }
         }
 
-        ContentValues values = new ContentValues();
-        values.put("calculation", workings);
-        values.put("result", result);
-        db.insert("calcularice_history", null, values);
-        displayLastHistoryEntry();
-        if(result != null)
-            resultsTV.setText(String.valueOf(result.doubleValue()));
-
+        } catch (Exception e)
+        {
+            Toast.makeText(this, "Invalid Input", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void checkForPowerOf()
-    {
-        ArrayList<Integer> indexOfPowers = new ArrayList<>();
-        for(int i = 0; i < workings.length(); i++)
-        {
-            if (workings.charAt(i) == '^')
-                indexOfPowers.add(i);
-        }
 
-        formula = workings;
-        tempFormula = workings;
-        for(Integer index: indexOfPowers)
-        {
-            changeFormula(index);
-        }
-        formula = tempFormula;
-    }
 
-    private void changeFormula(Integer index)
-    {
-        String numberLeft = "";
-        String numberRight = "";
 
-        for(int i = index + 1; i< workings.length(); i++)
-        {
-            if(isNumeric(workings.charAt(i)))
-                numberRight = numberRight + workings.charAt(i);
-            else
-                break;
-        }
-
-        for(int i = index - 1; i >= 0; i--)
-        {
-            if(isNumeric(workings.charAt(i)))
-                numberLeft = numberLeft + workings.charAt(i);
-            else
-                break;
-        }
-
-        String original = numberLeft + "^" + numberRight;
-        String changed = "Math.pow("+numberLeft+","+numberRight+")";
-        tempFormula = tempFormula.replace(original,changed);
-    }
 
     private boolean isNumeric(char c)
     {
@@ -150,13 +123,13 @@ public class MainActivity extends AppCompatActivity {
         workingsTV.setText(workings);
     }
 
-    public void powerOfOnClick(View view)
-    {
-        setWorkings("^");
-    }
 
     public void divisionOnClick(View view)
     {
+        if (workings == "" || workings == null) {
+            Toast.makeText(this, "Invalid Input", Toast.LENGTH_SHORT).show();
+            return;
+        }
         setWorkings("/");
     }
 
@@ -177,6 +150,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void timesOnClick(View view)
     {
+        if (workings == "" || workings == null) {
+            Toast.makeText(this, "Invalid Input", Toast.LENGTH_SHORT).show();
+            return;
+        }
         setWorkings("*");
     }
 
@@ -197,6 +174,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void minusOnClick(View view)
     {
+        if (workings == "" || workings == null) {
+            Toast.makeText(this, "Invalid Input", Toast.LENGTH_SHORT).show();
+            return;
+        }
         setWorkings("-");
     }
 
@@ -217,6 +198,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void plusOnClick(View view)
     {
+        if (workings == "" || workings == null) {
+            Toast.makeText(this, "Invalid Input", Toast.LENGTH_SHORT).show();
+            return;
+        }
         setWorkings("+");
     }
 
